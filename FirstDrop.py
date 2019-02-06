@@ -152,8 +152,6 @@ while run:
 
         y -= 1
 
-    # win.fill((255,255,255))
-
     if y < 690:
         y += vel # continuously move down screen
 
