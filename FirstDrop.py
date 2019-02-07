@@ -12,12 +12,13 @@ downchar = pygame.image.load('MOVE:DOWN.png')
 SWchar = pygame.image.load('MOVE:SOUTHWEST.png')
 SEchar = pygame.image.load('MOVE:SOUTHEAST.png')
 
+jump = pygame.image.load('Jump1-25x25.png')
+tree = pygame.image.load('TREE1-15x25.png')
+
 clock = pygame.time.Clock()
 
 x = 250
 y = 10
-
-
 
 vel = 0
 
@@ -26,9 +27,15 @@ SE = False
 Down = False
 Up = False
 
+x_list = [250]
+y_list = [10]
 
 def redraw_window():
     win.blit(bg, (0,0))
+
+    win.blit(jump, (250,350))
+    win.blit(tree, (150, 250))
+    win.blit(tree, (350, 450))
 
     if SW:
         win.blit(SWchar, (x, y))
@@ -41,6 +48,15 @@ def redraw_window():
     else:
         win.blit(char, (x,y))
 
+    x_list.append(x+3)
+    y_list.append(y+3)
+
+    for i in range(len(x_list)):
+
+        if i != 0 and i != len(x_list)-1:
+            pygame.draw.line(win, (0, 0, 0), (x_list[i], y_list[i]), (x_list[i-1], y_list[i-1]), 1)
+            pygame.draw.line(win, (0, 0, 0), (x_list[i]+3, y_list[i]), (x_list[i-1]+3, y_list[i-1]), 1)
+
     pygame.display.update()
 
 
@@ -49,13 +65,18 @@ run = True
 
 while run:
 
-    clock.tick(37)
+    clock.tick(27)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
     keys = pygame.key.get_pressed()
+
+    SW = False
+    SE = False
+    Down = True
+    Up = False
 
     if keys[pygame.K_LEFT] and x > vel and y < 690:
 
@@ -160,8 +181,6 @@ while run:
         x = 250
 
     redraw_window()
-
-    pygame.display.update()
 
 
 pygame.quit()
