@@ -48,7 +48,10 @@ class Jerry(object):
         self.strtx = x
         self.strty = y
         self.end = end
-        self.path = [self.x, self.end]
+        if self.x > self.end:
+            self.path = [self.end, self.x]
+        else:
+            self.path = [self.x, self.end]
         self.vel = vel
 
     def draw(self, win):
@@ -103,14 +106,69 @@ class Map(object):
 
 skiman = Skier(250, 10)
 
-jerryman = Jerry(10, 100, 3, 490)
-jerryman2 = Jerry(200, 200, 1, 390)
-jerryman3 = Jerry(30, 300, 5, 290)
-jerryman4 = Jerry(170, 150, 1, 190)
+jerryman = Jerry(490, 110, 3, 300)
+jerryman2 = Jerry(50, 150, 3, 490)
+
+jerryman3 = Jerry(40, 290, 1, 10)
+jerryman4 = Jerry(100, 210, 1, 400)
+
+jerryman5 = Jerry(390, 125, 2, 20)
+jerryman6 = Jerry(100, 140, 2, 490)
+
+jerryman7 = Jerry(460, 100, 4, 200)
+jerryman8 = Jerry(10, 111, 4, 490)
+
+jerryman9 = Jerry(210, 75, 1, 250)
 
 new_map = Map(30, 10)
 
 new_map.randomMap()
+
+
+def text_objects(text, font):
+    textSurface = font.render(text, True, (250, 150, 110))
+    return textSurface, textSurface.get_rect()
+
+
+def button(msg, x, y, w, h, ic, ac, action=None):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    print(click)
+    if x+w > mouse[0] > x and y+h > mouse[1] > y:
+        pygame.draw.rect(win, ac, (x, y, w, h))
+
+        if click[0] == 1 and action != None:
+            action()
+    else:
+        pygame.draw.rect(win, ic, (x, y, w, h))
+
+    smallText = pygame.font.Font("freesansbold.ttf",20)
+    textSurf, textRect = text_objects(msg, smallText)
+    textRect.center = ((x + (w / 2)), (y + (h / 2)))
+    win.blit(textSurf, textRect)
+
+
+def game_intro():
+    intro = True
+
+    while intro:
+        for event in pygame.event.get():
+            print(event)
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        win.fill((10, 10, 55))
+        largeText = pygame.font.Font('freesansbold.ttf', 55)
+        TextSurf, TextRect = text_objects("First Drop", largeText)
+        TextRect.center = ((500 / 2), (700 / 2))
+        win.blit(TextSurf, TextRect)
+
+        button("SHRED!", 200, 450, 100, 25, (250, 150, 110), (100, 50, 110), gameloop)
+        button("Quit", 200, 500, 100, 25, (250, 150, 110), (100, 50, 110), quit)
+
+        pygame.display.update()
+        clock.tick(15)
 
 
 def redraw_window():
@@ -120,6 +178,11 @@ def redraw_window():
     jerryman2.draw(win)
     jerryman3.draw(win)
     jerryman4.draw(win)
+    jerryman5.draw(win)
+    jerryman6.draw(win)
+    jerryman7.draw(win)
+    jerryman8.draw(win)
+    jerryman9.draw(win)
 
     for i in range(len(new_map.jmp_x)):
         win.blit(tree, (new_map.tree_x[i], new_map.tree_y[i]))
@@ -290,6 +353,6 @@ def gameloop():
 
         redraw_window()
 
-
+game_intro()
 gameloop()
 pygame.quit()
