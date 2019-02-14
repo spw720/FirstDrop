@@ -133,8 +133,8 @@ def text_objects(text, font):
 def button(msg, x, y, w, h, ic, ac, action=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
-    print(click)
-    if x+w > mouse[0] > x and y+h > mouse[1] > y:
+
+    if x + w > mouse[0] > x and y + h > mouse[1] > y:
         pygame.draw.rect(win, ac, (x, y, w, h))
 
         if click[0] == 1 and action != None:
@@ -153,12 +153,12 @@ def game_intro():
 
     while intro:
         for event in pygame.event.get():
-            print(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
-        win.fill((10, 10, 55))
+        #win.fill((10, 10, 55))
+        win.blit(bg, (0, 0))
         largeText = pygame.font.Font('freesansbold.ttf', 55)
         TextSurf, TextRect = text_objects("First Drop", largeText)
         TextRect.center = ((500 / 2), (700 / 2))
@@ -352,6 +352,7 @@ def gameloop():
             new_map.randomMap()
 
         redraw_window()
+
 
 game_intro()
 gameloop()
