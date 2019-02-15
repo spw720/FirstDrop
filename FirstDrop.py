@@ -8,6 +8,7 @@ win = pygame.display.set_mode((500, 700))
 pygame.display.set_caption("First Drop")
 
 bg = pygame.image.load('BG.png')
+TITLE = pygame.image.load('TITLE.png')
 char = pygame.image.load('STANDING:STOP.png')
 downchar = pygame.image.load('MOVE:DOWN.png')
 SWchar = pygame.image.load('MOVE:SOUTHWEST.png')
@@ -126,7 +127,7 @@ new_map.randomMap()
 
 
 def text_objects(text, font):
-    textSurface = font.render(text, True, (250, 150, 110))
+    textSurface = font.render(text, True, (100, 10, 10))
     return textSurface, textSurface.get_rect()
 
 
@@ -157,15 +158,14 @@ def game_intro():
                 pygame.quit()
                 quit()
 
-        #win.fill((10, 10, 55))
-        win.blit(bg, (0, 0))
+        win.blit(TITLE, (0, 0))
         largeText = pygame.font.Font('freesansbold.ttf', 55)
-        TextSurf, TextRect = text_objects("First Drop", largeText)
+        TextSurf, TextRect = text_objects(" First_Drop", largeText)
         TextRect.center = ((500 / 2), (700 / 2))
         win.blit(TextSurf, TextRect)
 
-        button("SHRED!", 200, 450, 100, 25, (250, 150, 110), (100, 50, 110), gameloop)
-        button("Quit", 200, 500, 100, 25, (250, 150, 110), (100, 50, 110), quit)
+        button("SHRED!", 200, 450, 100, 25, (100, 10, 10), (200, 200, 200), gameloop)
+        button("Quit", 200, 500, 100, 25, (100, 10, 10), (200, 200, 200), quit)
 
         pygame.display.update()
         clock.tick(15)
@@ -254,6 +254,9 @@ def gameloop():
             skiman.FSE = False
             skiman.Down = True
             skiman.Up = False
+
+        if keys[pygame.K_p]:
+            game_intro()
 
         if keys[pygame.K_LEFT] and skiman.x > skiman.vel and skiman.y < 690:
             skiman.SW = True
