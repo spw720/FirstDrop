@@ -36,6 +36,7 @@ class Skier(object):
         self.Up = False
         self.x_list = [254]
         self.y_list = [14]
+        self.hitbox = (self.x, self.y, 10, 10)
 
 
 class Jerry(object):
@@ -49,6 +50,7 @@ class Jerry(object):
         self.strtx = x
         self.strty = y
         self.end = end
+        self.hitbox = (self.x, self.y, 10, 10)
         if self.x > self.end:
             self.path = [self.end, self.x]
         else:
@@ -61,6 +63,8 @@ class Jerry(object):
             win.blit(self.J_Right, (self.x, self.y))
         else:
             win.blit(self.J_Left, (self.x, self.y))
+        self.hitbox = (self.x, self.y, 10, 10)
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def move(self):
         if self.vel > 0:
@@ -77,6 +81,10 @@ class Jerry(object):
         if self.y >= 690:
             self.x = self.strtx
             self.y = self.strty
+
+    def hit(self):
+        print("hit")
+        pass
 
 
 class Map(object):
@@ -121,6 +129,9 @@ jerryman8 = Jerry(10, 111, 4, 490)
 
 jerryman9 = Jerry(210, 75, 1, 250)
 
+jerrylist = [jerryman, jerryman2, jerryman3, jerryman4, jerryman5, jerryman6,
+             jerryman7, jerryman8, jerryman9]
+
 new_map = Map(30, 10)
 
 new_map.randomMap()
@@ -164,14 +175,14 @@ def game_intro():
         TextRect.center = ((500 / 2), (700 / 2))
         win.blit(TextSurf, TextRect)
 
-        button("SHRED!", 200, 450, 100, 25, (100, 10, 10), (200, 200, 200), gameloop)
-        button("Quit", 200, 500, 100, 25, (100, 10, 10), (200, 200, 200), quit)
+        button("SHRED!", 200, 450, 100, 25, (100, 10, 10), (253, 192, 47), gameloop)#(200, 200, 200), gameloop)
+        button("Quit", 200, 500, 100, 25, (100, 10, 10), (253, 192, 47), quit)
 
         pygame.display.update()
         clock.tick(15)
 
 
-def redraw_window():
+def redraw_window(self):
     win.blit(bg, (0, 0))
 
     jerryman.draw(win)
@@ -212,6 +223,9 @@ def redraw_window():
     skiman.x_list.append(skiman.x+3)
     skiman.y_list.append(skiman.y+3)
 
+    self.hitbox = (self.x, self.y, 10, 10)
+    pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+
     for i in range(len(skiman.x_list)):
 
         if i != 0:
@@ -235,6 +249,15 @@ def gameloop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
+        for i in jerrylist:
+            if skiman.y+5 < i.hitbox[1] + i.hitbox[3] and skiman.y+5 > i.hitbox[1]:
+                if skiman.x+5 > i.hitbox[0] and skiman.x+5 < i.hitbox[0] + i.hitbox[2]:
+                    skiman.x = 250
+                    skiman.y = 10
+                    skiman.x_list = []
+                    skiman.y_list = []
+                    jerryman.hit()
 
         keys = pygame.key.get_pressed()
 
@@ -354,7 +377,7 @@ def gameloop():
             skiman.y_list = [14]
             new_map.randomMap()
 
-        redraw_window()
+        redraw_window(skiman)
 
 
 game_intro()
