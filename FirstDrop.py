@@ -9,7 +9,7 @@ pygame.display.set_caption("First Drop")
 
 bg = pygame.image.load('BG.png')
 TITLE = pygame.image.load('TITLE.png')
-char = pygame.image.load('STANDING:STOP.png')
+char = pygame.image.load('STANDING:STOP.png')#('STANDING:STOP.png')
 downchar = pygame.image.load('MOVE:DOWN.png')
 SWchar = pygame.image.load('MOVE:SOUTHWEST.png')
 SEchar = pygame.image.load('MOVE:SOUTHEAST.png')
@@ -19,6 +19,8 @@ FASTSE = pygame.image.load('FASTSE.png')
 jump = pygame.image.load('Jump1-25x25.png')
 tree = pygame.image.load('TREE1-15x25.png')
 
+dead = pygame.image.load('DEAD.png')
+
 clock = pygame.time.Clock()
 
 
@@ -27,6 +29,9 @@ class Skier(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+        self.score = 0
+
         self.vel = 0
         self.SW = False
         self.SE = False
@@ -37,6 +42,34 @@ class Skier(object):
         self.x_list = [254]
         self.y_list = [14]
         self.hitbox = (self.x, self.y, 10, 10)
+
+
+class Jump(object):
+
+    jump = pygame.image.load('Jump1-25x25.png')
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.hitbox = (self.x, self.y, 25, 25)
+
+    def draw(self, win):
+        win.blit(self.jump, (self.x, self.y))
+        self.hitbox = (self.x, self.y, 25, 25)
+
+
+class Tree(object):
+
+    tree = pygame.image.load('TREE1-15x25.png')
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.hitbox = (self.x, self.y, 15, 25)
+
+    def draw(self, win):
+        win.blit(self.tree, (self.x, self.y))
+        self.hitbox = (self.x, self.y, 15, 25)
 
 
 class Jerry(object):
@@ -64,7 +97,7 @@ class Jerry(object):
         else:
             win.blit(self.J_Left, (self.x, self.y))
         self.hitbox = (self.x, self.y, 10, 10)
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        #pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def move(self):
         if self.vel > 0:
@@ -83,7 +116,6 @@ class Jerry(object):
             self.y = self.strty
 
     def hit(self):
-        print("hit")
         pass
 
 
@@ -103,6 +135,7 @@ class Map(object):
         self.jmp_y = []
         self.tree_x = []
         self.tree_y = []
+        self.tree_list = []
 
         for x in range(self.num_trees):
             self.tree_x.append(random.randint(20, 480))
@@ -132,9 +165,19 @@ jerryman9 = Jerry(210, 75, 1, 250)
 jerrylist = [jerryman, jerryman2, jerryman3, jerryman4, jerryman5, jerryman6,
              jerryman7, jerryman8, jerryman9]
 
-new_map = Map(30, 10)
+new_map = Map(30, 10) # number of trees, jumps
 
 new_map.randomMap()
+
+#tree_list = []
+jump_list = []
+
+for i in range(new_map.num_trees):
+    new_map.tree_list.append(Tree(new_map.tree_x[i], new_map.tree_y[i]))
+
+for i in range(new_map.num_jumps):
+    jump_list.append(Jump(new_map.jmp_x[i], new_map.jmp_y[i]))
+
 
 
 def text_objects(text, font):
@@ -175,8 +218,42 @@ def game_intro():
         TextRect.center = ((500 / 2), (700 / 2))
         win.blit(TextSurf, TextRect)
 
-        button("SHRED!", 200, 450, 100, 25, (100, 10, 10), (253, 192, 47), gameloop)#(200, 200, 200), gameloop)
-        button("Quit", 200, 500, 100, 25, (100, 10, 10), (253, 192, 47), quit)
+        largeText2 = pygame.font.Font('freesansbold.ttf', 25)
+        TextSurf2, TextRect2 = text_objects("CONTROLS:", largeText2)
+        TextRect2.center = (((500/2)/2), (600))
+        win.blit(TextSurf2, TextRect2)
+
+        TextSurf3, TextRect3 = text_objects("Arrow keys to ski", largeText2)
+        TextRect3.center = (((500/2)/2), (630))
+        win.blit(TextSurf3, TextRect3)
+
+        TextSurf4, TextRect4 = text_objects("'P' to pause game", largeText2)
+        TextRect4.center = (((500/2)/2), (660))
+        win.blit(TextSurf4, TextRect4)
+
+        largeText3 = pygame.font.Font('freesansbold.ttf', 15)
+        TextSurf5, TextRect5 = text_objects("RULES:", largeText2)
+        TextRect5.center = ((((500 / 2) / 2)*3), (600))
+        win.blit(TextSurf5, TextRect5)
+
+        TextSurf6, TextRect6 = text_objects("Hit a Jerry (-50 points)", largeText3)
+        TextRect6.center = ((((500 / 2) / 2)*3), (620))
+        win.blit(TextSurf6, TextRect6)
+
+        TextSurf7, TextRect7 = text_objects("Hit a Tree (Reset score!)", largeText3)
+        TextRect7.center = ((((500 / 2) / 2)*3), (635))
+        win.blit(TextSurf7, TextRect7)
+
+        TextSurf8, TextRect8 = text_objects("Hit a Jump (+50 points)", largeText3)
+        TextRect8.center = ((((500 / 2) / 2)*3), (650))
+        win.blit(TextSurf8, TextRect8)
+
+        TextSurf9, TextRect9 = text_objects("Reach the bottom (+100 points)", largeText3)
+        TextRect9.center = ((((500 / 2) / 2)*3), (665))
+        win.blit(TextSurf9, TextRect9)
+
+        button("SHRED!", 200, 450, 100, 25, (100, 100, 100), (253, 192, 47), gameloop)#(200, 200, 200), gameloop)
+        button("Quit", 200, 500, 100, 25, (100, 100, 100), (253, 192, 47), quit)
 
         pygame.display.update()
         clock.tick(15)
@@ -195,9 +272,14 @@ def redraw_window(self):
     jerryman8.draw(win)
     jerryman9.draw(win)
 
-    for i in range(len(new_map.jmp_x)):
+    for i in range(len(jump_list)):
+        jump_list[i].draw(win)
+
+    for i in range(len(new_map.tree_list)):
+        new_map.tree_list[i].draw(win)
+
+    for i in range(len(new_map.tree_x)):
         win.blit(tree, (new_map.tree_x[i], new_map.tree_y[i]))
-        win.blit(jump, (new_map.jmp_x[i], new_map.jmp_y[i]))
 
     if skiman.SW:
         win.blit(SWchar, (skiman.x, skiman.y))
@@ -224,7 +306,7 @@ def redraw_window(self):
     skiman.y_list.append(skiman.y+3)
 
     self.hitbox = (self.x, self.y, 10, 10)
-    pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+    #pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     for i in range(len(skiman.x_list)):
 
@@ -234,6 +316,18 @@ def redraw_window(self):
                                              (skiman.x_list[i - 1], skiman.y_list[i - 1]), 1)
             pygame.draw.line(win, (0, 0, 0), (skiman.x_list[i] + 3, skiman.y_list[i]),
                                              (skiman.x_list[i - 1] + 3, skiman.y_list[i - 1]), 1)
+
+
+    #pygame.draw.rect(win, (0,0,0), (350,10,130,80), 3)
+    largeText2 = pygame.font.Font('freesansbold.ttf', 25)
+    TextSurf2, TextRect2 = text_objects("POINTS:", largeText2)
+    TextRect2.center = ((410), (20))
+    win.blit(TextSurf2, TextRect2)
+
+
+    TextSurf3, TextRect3 = text_objects(str(skiman.score), largeText2)
+    TextRect3.center = ((430), (50))
+    win.blit(TextSurf3, TextRect3)
 
     pygame.display.update()
 
@@ -257,7 +351,30 @@ def gameloop():
                     skiman.y = 10
                     skiman.x_list = []
                     skiman.y_list = []
+                    skiman.score -= 50
                     jerryman.hit()
+
+                    # new_map.randomMap()
+
+        for i in jump_list:
+            if skiman.y+5 < i.hitbox[1] + i.hitbox[3] and skiman.y+5 > i.hitbox[1]:
+                if skiman.x+5 > i.hitbox[0] and skiman.x+5 < i.hitbox[0] + i.hitbox[2]:
+                    skiman.y += 15
+                    skiman.score += 50
+
+
+        for i in new_map.tree_list:
+            if skiman.y+5 < i.hitbox[1] + i.hitbox[3] and skiman.y+5 > i.hitbox[1]:
+                if skiman.x+5 > i.hitbox[0] and skiman.x+5 < i.hitbox[0] + i.hitbox[2]:
+                    skiman.x = 250
+                    skiman.y = 10
+                    skiman.x_list = []
+                    skiman.y_list = []
+                    new_map.num_trees = 30
+                    skiman.score = 0
+                    # new_map.randomMap()
+
+
 
         keys = pygame.key.get_pressed()
 
@@ -371,11 +488,23 @@ def gameloop():
             skiman.y += skiman.vel  # continuously move down screen
 
         if skiman.y >= 690:  # restart player at top of screen
+
+            skiman.score += 100
+            #new_map.num_trees += 5
+
+            skiman.vel += 100
+
             skiman.x = 250
             skiman.y = 10
             skiman.x_list = [254]
             skiman.y_list = [14]
+
             new_map.randomMap()
+            for i in range(new_map.num_trees):
+                new_map.tree_list.append(Tree(new_map.tree_x[i], new_map.tree_y[i]))
+            #for i in range(5):
+            #    tree_list.append(Tree(random.randint(20, 480), random.randint(20, 480)))
+
 
         redraw_window(skiman)
 
