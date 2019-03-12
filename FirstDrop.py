@@ -136,6 +136,7 @@ class Map(object):
         self.tree_x = []
         self.tree_y = []
         self.tree_list = []
+        self.jump_list = []
 
         for x in range(self.num_trees):
             self.tree_x.append(random.randint(20, 480))
@@ -170,13 +171,13 @@ new_map = Map(30, 10) # number of trees, jumps
 new_map.randomMap()
 
 #tree_list = []
-jump_list = []
+#
 
 for i in range(new_map.num_trees):
     new_map.tree_list.append(Tree(new_map.tree_x[i], new_map.tree_y[i]))
 
 for i in range(new_map.num_jumps):
-    jump_list.append(Jump(new_map.jmp_x[i], new_map.jmp_y[i]))
+    new_map.jump_list.append(Jump(new_map.jmp_x[i], new_map.jmp_y[i]))
 
 
 
@@ -272,14 +273,16 @@ def redraw_window(self):
     jerryman8.draw(win)
     jerryman9.draw(win)
 
-    for i in range(len(jump_list)):
-        jump_list[i].draw(win)
+    for i in range(len(new_map.jump_list)):
+        new_map.jump_list[i].draw(win)
 
     for i in range(len(new_map.tree_list)):
         new_map.tree_list[i].draw(win)
 
     for i in range(len(new_map.tree_x)):
         win.blit(tree, (new_map.tree_x[i], new_map.tree_y[i]))
+    for i in range(len(new_map.jmp_x)):
+        win.blit(jump, (new_map.jmp_x[i], new_map.jmp_y[i]))
 
     if skiman.SW:
         win.blit(SWchar, (skiman.x, skiman.y))
@@ -356,7 +359,7 @@ def gameloop():
 
                     # new_map.randomMap()
 
-        for i in jump_list:
+        for i in new_map.jump_list:
             if skiman.y+5 < i.hitbox[1] + i.hitbox[3] and skiman.y+5 > i.hitbox[1]:
                 if skiman.x+5 > i.hitbox[0] and skiman.x+5 < i.hitbox[0] + i.hitbox[2]:
                     skiman.y += 15
@@ -502,6 +505,8 @@ def gameloop():
             new_map.randomMap()
             for i in range(new_map.num_trees):
                 new_map.tree_list.append(Tree(new_map.tree_x[i], new_map.tree_y[i]))
+            for i in range(new_map.num_jumps):
+                new_map.jump_list.append(Jump(new_map.jmp_x[i], new_map.jmp_y[i]))
             #for i in range(5):
             #    tree_list.append(Tree(random.randint(20, 480), random.randint(20, 480)))
 
